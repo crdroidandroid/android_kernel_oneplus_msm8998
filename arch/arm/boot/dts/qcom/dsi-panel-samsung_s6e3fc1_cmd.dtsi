@@ -232,6 +232,7 @@
 
 /**************************************************************************/
 			qcom,ulps-enabled;
+			qcom,suspend-ulps-enabled;
 			qcom,panel-allow-phy-poweroff;
 
 		cm,mdss-livedisplay-cabc-cmd = [
