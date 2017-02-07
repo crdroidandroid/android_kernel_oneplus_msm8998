@@ -389,6 +389,7 @@ static void msm_restart_prepare(const char *cmd)
 			enable_emergency_dload_mode();
 #endif
 		} else {
+			qpnp_pon_set_restart_reason(PON_RESTART_REASON_UNKNOWN);
 			__raw_writel(0x77665501, restart_reason);
 		}
 	}
