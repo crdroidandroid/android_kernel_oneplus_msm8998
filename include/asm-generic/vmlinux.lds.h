@@ -456,6 +456,7 @@
 		ALIGN_FUNCTION();					\
 		*(.text.hot .text.hot.*)				\
 		*(TEXT_MAIN .text.fixup)					\
+		*(.text..ftrace)					\
 		*(.text.unlikely .text.unlikely.*)			\
 		*(.text.unknown .text.unknown.*)			\
 		*(.ref.text)						\
