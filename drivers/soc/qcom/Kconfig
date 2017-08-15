@@ -993,4 +993,10 @@ config EXT_ANC
 	 This option enables support for anti-noise cnacellation
 	 on Sensor DSP.
 
+config ONEPLUS_PROJECT_INFO
+	bool "Enable OnePlus Project Info"
+	default y
+	help
+	  Used by various OnePlus drivers, disable this and you will have a hard time.
+
 source "drivers/soc/qcom/memshare/Kconfig"
