@@ -13,6 +13,7 @@
 #ifndef _IPC_LOGGING_H
 #define _IPC_LOGGING_H
 
+#include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/errno.h>
 
