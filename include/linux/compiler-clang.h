@@ -23,3 +23,10 @@
 */
 #undef inline
 #define inline inline __attribute__((unused)) notrace
+
+/*
+ * Clang supports FORTIFY_SOURCE; this needs to override compiler-gcc.h turning it off
+ */
+#ifdef __NO_FORTIFY
+#undef __NO_FORTIFY
+#endif
