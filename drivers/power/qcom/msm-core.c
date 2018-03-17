@@ -119,6 +119,10 @@ ALLOCATE_2D_ARRAY(uint32_t);
  * even when ENABLE_TSENS_SAMPLING isn't used.
  */
 static __read_mostly int poll_ms;
+#ifndef ENABLE_TSENS_SAMPLING
+module_param_named(poll_ms, poll_ms, int,
+		S_IRUGO | S_IWUSR | S_IWGRP);
+#endif
 static __read_mostly int poll_ms_dummy;
 module_param_named(polling_interval, poll_ms_dummy, int,
 		S_IRUGO | S_IWUSR | S_IWGRP);
