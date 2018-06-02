@@ -35,6 +35,7 @@
 #include <linux/coresight-cti.h>
 #include <linux/moduleparam.h>
 #include <linux/sched.h>
+#include <linux/state_notifier.h>
 #include <linux/cpu_pm.h>
 #include <linux/arm-smccc.h>
 #include <soc/qcom/spm.h>
@@ -715,7 +716,7 @@ static int cpu_power_select(struct cpuidle_device *dev,
 	if (!cpu)
 		return -EINVAL;
 
-	if ((sleep_disabled && !cpu_isolated(dev->cpu)) || sleep_us  < 0)
+	if ((!state_suspended && sleep_disabled && !cpu_isolated(dev->cpu)) || sleep_us  < 0)
 		return 0;
 
 	idx_restrict = cpu->nlevels + 1;
