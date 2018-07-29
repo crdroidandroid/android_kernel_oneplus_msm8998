@@ -2105,24 +2105,26 @@ static void binder_send_failed_reply(struct binder_transaction *t,
 	}
 }
 
-/* binder_cleanup_transaction() - cleans up undelivered transaction
-* @t:		transaction that needs to be cleaned up
-* @reason:	reason the transaction wasn't delivered
-* @error_code:	error to return to caller (if synchronous call)
-*/
+/**
+ * binder_cleanup_transaction() - cleans up undelivered transaction
+ * @t:		transaction that needs to be cleaned up
+ * @reason:	reason the transaction wasn't delivered
+ * @error_code:	error to return to caller (if synchronous call)
+ */
 static void binder_cleanup_transaction(struct binder_transaction *t,
-	const char *reason,
-	uint32_t error_code)
+				       const char *reason,
+				       uint32_t error_code)
 {
 	if (t->buffer->target_node && !(t->flags & TF_ONE_WAY)) {
 		binder_send_failed_reply(t, error_code);
 	} else {
 		binder_debug(BINDER_DEBUG_DEAD_TRANSACTION,
-		"undelivered transaction %d, %s\n",
-		t->debug_id, reason);
+			"undelivered transaction %d, %s\n",
+			t->debug_id, reason);
 		binder_free_transaction(t);
 	}
 }
+
 /**
  * binder_validate_object() - checks for a valid metadata object in a buffer.
  * @buffer:	binder_buffer that we're parsing.
@@ -4220,6 +4222,7 @@ retry:
 
 			binder_cleanup_transaction(t, "put_user failed",
 						   BR_FAILED_REPLY);
+
 			return -EFAULT;
 		}
 		ptr += sizeof(uint32_t);
@@ -4228,7 +4231,7 @@ retry:
 				binder_thread_dec_tmpref(t_from);
 
 			binder_cleanup_transaction(t, "copy_to_user failed",
-					BR_FAILED_REPLY);
+						   BR_FAILED_REPLY);
 
 			return -EFAULT;
 		}

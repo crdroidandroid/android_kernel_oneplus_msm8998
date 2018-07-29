@@ -739,12 +739,12 @@ static void ipa_work_handler(struct work_struct *w)
 				block_db = true;
 				/* stop USB ringing doorbell to GSI(OUT_EP) */
 				usb_gsi_ep_op(d_port->in_ep, (void *)&block_db,
-					GSI_EP_OP_SET_CLR_BLOCK_DBL);
+						GSI_EP_OP_SET_CLR_BLOCK_DBL);
 				gsi_rndis_ipa_reset_trigger(d_port);
 				usb_gsi_ep_op(d_port->in_ep, NULL,
-					GSI_EP_OP_ENDXFER);
+						GSI_EP_OP_ENDXFER);
 				usb_gsi_ep_op(d_port->out_ep, NULL,
-					GSI_EP_OP_ENDXFER);
+						GSI_EP_OP_ENDXFER);
 			}
 
 			ipa_disconnect_work_handler(d_port);
@@ -1472,7 +1472,6 @@ static void gsi_rndis_ipa_reset_trigger(struct gsi_data_port *d_port)
 	rndis->d_port.net_ready_trigger = false;
 	spin_unlock_irqrestore(&rndis->d_port.lock, flags);
 }
-
 
 void gsi_rndis_flow_ctrl_enable(bool enable, struct rndis_params *param)
 {
