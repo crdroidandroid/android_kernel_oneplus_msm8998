@@ -2649,6 +2649,7 @@ u32 sched_get_wake_up_idle(struct task_struct *p)
 
 	return !!enabled;
 }
+EXPORT_SYMBOL(sched_get_wake_up_idle);
 
 int sched_set_wake_up_idle(struct task_struct *p, int wake_up_idle)
 {
@@ -2661,6 +2662,7 @@ int sched_set_wake_up_idle(struct task_struct *p, int wake_up_idle)
 
 	return 0;
 }
+EXPORT_SYMBOL(sched_set_wake_up_idle);
 
 static const u32 runnable_avg_yN_inv[] = {
 	0xffffffff, 0xfa83b2da, 0xf5257d14, 0xefe4b99a, 0xeac0c6e6, 0xe5b906e6,
@@ -6573,7 +6575,7 @@ static int find_new_capacity(struct energy_env *eenv,
 	int idx, max_idx = sge->nr_cap_states - 1;
 	unsigned long util = group_max_util(eenv);
 
-	 /* default is max_cap if we don't find a match */
+	/* default is max_cap if we don't find a match */
 	eenv->cap_idx = max_idx;
 
 	for (idx = 0; idx < sge->nr_cap_states; idx++) {
