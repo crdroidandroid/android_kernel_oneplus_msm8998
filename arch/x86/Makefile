@@ -109,7 +109,6 @@ else
         # Don't autogenerate traditional x87 instructions
         KBUILD_CFLAGS += $(call cc-option,-mno-80387)
         KBUILD_CFLAGS += $(call cc-option,-mno-fp-ret-in-387)
-
         KBUILD_CFLAGS += -fno-pic
 
         # By default gcc and clang use a stack alignment of 16 bytes for x86.
