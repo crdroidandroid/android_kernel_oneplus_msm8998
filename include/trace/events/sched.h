@@ -1931,7 +1931,7 @@ TRACE_EVENT(walt_update_history,
 		__field(	 int,	samples			)
 		__field(	 int,	evt			)
 		__field(	 u64,	demand			)
-		__field(	 u64,	walt_avg		)
+		__field(unsigned int,	walt_avg		)
 		__field(unsigned int,	pelt_avg		)
 		__array(	 u32,	hist, RAVG_HIST_SIZE_MAX)
 		__field(	 int,	cpu			)
