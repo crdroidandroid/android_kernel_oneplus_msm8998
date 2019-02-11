@@ -728,6 +728,10 @@ ifdef CONFIG_KCOV
   endif
 endif
 
+ifeq ($(ld-name),lld)
+LDFLAGS += -O2
+endif
+
 ifeq ($(cc-name),clang)
 KBUILD_CPPFLAGS += $(call cc-option,-Qunused-arguments,)
 KBUILD_CFLAGS += $(call cc-disable-warning, format-invalid-specifier)
