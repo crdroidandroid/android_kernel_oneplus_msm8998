@@ -1839,7 +1839,8 @@ write_parameter:
 	}
 	di->already_modify_smooth = true;
 	if (di->recovery_rom_mode)
-		schedule_delayed_work(&di->bq_reset, 2000);
+		queue_delayed_work(system_power_efficient_wq,
+			&di->bq_reset, 2000);
 	pr_err("%s end\n", __func__);
 }
 
