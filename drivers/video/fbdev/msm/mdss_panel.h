@@ -1024,6 +1024,7 @@ struct mdss_panel_data {
 	bool panel_disable_mode;
 
 	int panel_te_gpio;
+	struct mutex te_mutex;
 	struct completion te_done;
 };
 
