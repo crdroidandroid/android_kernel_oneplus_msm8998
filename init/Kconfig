@@ -89,7 +89,7 @@ config LOCALVERSION
 
 config LOCALVERSION_AUTO
 	bool "Automatically append version information to the version string"
-	default y
+	default n
 	help
 	  This will try to automatically determine if the current tree is a
 	  release tree by looking for git tags that belong to the current
@@ -835,7 +835,7 @@ config LOG_BUF_SHIFT
 	int "Kernel log buffer size (16 => 64KB, 17 => 128KB)"
 	range 12 25 if !H8300
 	range 12 19 if H8300
-	default 17
+	default 18
 	depends on PRINTK
 	help
 	  Select the minimal kernel log buffer size as a power of 2.
