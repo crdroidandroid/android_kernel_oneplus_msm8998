@@ -76,12 +76,6 @@ static int send4(struct wg_device *wg, struct sk_buff *skb,
 			net_dbg_ratelimited("%s: No route to %pISpfsc, error %d\n",
 					    wg->dev->name, &endpoint->addr, ret);
 			goto err;
-		} else if (unlikely(rt->dst.dev == skb->dev)) {
-			ip_rt_put(rt);
-			ret = -ELOOP;
-			net_dbg_ratelimited("%s: Avoiding routing loop to %pISpfsc\n",
-					    wg->dev->name, &endpoint->addr);
-			goto err;
 		}
 		if (cache)
 			dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
@@ -148,12 +142,6 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
 			ret = PTR_ERR(dst);
 			net_dbg_ratelimited("%s: No route to %pISpfsc, error %d\n",
 					    wg->dev->name, &endpoint->addr, ret);
-			goto err;
-		} else if (unlikely(dst->dev == skb->dev)) {
-			dst_release(dst);
-			ret = -ELOOP;
-			net_dbg_ratelimited("%s: Avoiding routing loop to %pISpfsc\n",
-					    wg->dev->name, &endpoint->addr);
 			goto err;
 		}
 		if (cache)
@@ -432,7 +420,6 @@ void wg_socket_reinit(struct wg_device *wg, struct sock *new4,
 		wg->incoming_port = ntohs(inet_sk(new4)->inet_sport);
 	mutex_unlock(&wg->socket_update_lock);
 	synchronize_rcu();
-	synchronize_net();
 	sock_free(old4);
 	sock_free(old6);
 }

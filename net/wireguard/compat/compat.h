@@ -16,13 +16,18 @@
 #define ISRHEL7
 #elif RHEL_MAJOR == 8
 #define ISRHEL8
+#if RHEL_MINOR == 1
+#define ISCENTOS8
+#endif
 #endif
 #endif
 #ifdef UTS_UBUNTU_RELEASE_ABI
 #if LINUX_VERSION_CODE == KERNEL_VERSION(3, 13, 11)
 #define ISUBUNTU1404
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 5, 0)
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(4, 5, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0)
 #define ISUBUNTU1604
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 3, 0)
+#define ISUBUNTU1910
 #endif
 #endif
 #ifdef CONFIG_SUSE_KERNEL
@@ -31,6 +36,9 @@
 #endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 13, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
 #define ISOPENSUSE15
+#endif
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 3, 0)
+#define ISOPENSUSE152
 #endif
 #endif
 
@@ -88,16 +96,10 @@
 #define ipv6_dst_lookup(a, b, c, d) ipv6_dst_lookup(b, c, d)
 #endif
 
-#if (LINUX_VERSION_CODE == KERNEL_VERSION(4, 4, 0) || \
-    (LINUX_VERSION_CODE < KERNEL_VERSION(4, 3, 5) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)) || \
-    (LINUX_VERSION_CODE < KERNEL_VERSION(4, 1, 17) && LINUX_VERSION_CODE > KERNEL_VERSION(3, 19, 0)) || \
-    (LINUX_VERSION_CODE < KERNEL_VERSION(3, 18, 27) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0)) || \
-    (LINUX_VERSION_CODE < KERNEL_VERSION(3, 16, 8) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0)) || \
-    (LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 40) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)) || \
-    (LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 54))) && !defined(ISUBUNTU1404) && (!defined(ISRHEL7) || RHEL_MINOR < 7) /* TODO: remove < 7 workaround once CentOS 7.7 comes out. */
-#include <linux/if.h>
-#include <net/ip_tunnels.h>
-#define IP6_ECN_set_ce(a, b) IP6_ECN_set_ce(b)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 83)
+#define ipv6_dst_lookup_flow(a, b, c, d) ipv6_dst_lookup_flow(b, c, d)
+#elif (LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 5) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 18) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0)) || ((!defined(ISRHEL8) || defined(ISCENTOS8)) && !defined(ISDEBIAN) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 119) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 181) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 224) && LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 224)
+#define ipv6_dst_lookup_flow(a, b, c, d) ipv6_dst_lookup(a, b, &dst, c) + (void *)0 ?: dst
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0) && IS_ENABLED(CONFIG_IPV6) && !defined(ISRHEL7)
@@ -112,7 +114,6 @@ static const struct ipv6_stub_type ipv6_stub_impl = {
 };
 static const struct ipv6_stub_type *ipv6_stub = &ipv6_stub_impl;
 #endif
-
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 8, 0) && IS_ENABLED(CONFIG_IPV6) && !defined(ISOPENSUSE42) && !defined(ISRHEL7)
 #include <net/addrconf.h>
@@ -664,7 +665,7 @@ struct __compat_dummy_container { char dev; };
 #define COMPAT_CANNOT_USE_AVX512
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0) && !defined(ISOPENSUSE15)
 #include <net/genetlink.h>
 #define genl_dump_check_consistent(a, b) genl_dump_check_consistent(a, b, &genl_family)
 #endif
@@ -726,7 +727,7 @@ static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
 }
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0) && !defined(ISOPENSUSE15)
 #include <crypto/algapi.h>
 static inline void crypto_xor_cpy(u8 *dst, const u8 *src1, const u8 *src2,
 				  unsigned int size)
@@ -787,7 +788,7 @@ struct __kernel_timespec {
 #endif
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0) && (!defined(ISRHEL8) || defined(ISCENTOS8))
 #include <linux/skbuff.h>
 #define skb_probe_transport_header(a) skb_probe_transport_header(a, 0)
 #endif
@@ -796,7 +797,7 @@ struct __kernel_timespec {
 #define ignore_df local_df
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0) && (!defined(ISRHEL8) || defined(ISCENTOS8))
 /* Note that all intentional uses of the non-_bh variety need to explicitly
  * undef these, conditionalized on COMPAT_CANNOT_DEPRECIATE_BH_RCU.
  */
@@ -828,7 +829,7 @@ static __always_inline void old_rcu_barrier(void)
 #define COMPAT_CANNOT_DEPRECIATE_BH_RCU
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 10) && !defined(ISRHEL8)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 10) && !defined(ISRHEL8) && !defined(ISOPENSUSE15)
 static inline void skb_mark_not_on_list(struct sk_buff *skb)
 {
 	skb->next = NULL;
@@ -838,7 +839,7 @@ static inline void skb_mark_not_on_list(struct sk_buff *skb)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 20, 0) && !defined(ISRHEL8)
 #define NLA_EXACT_LEN NLA_UNSPEC
 #endif
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0) && (!defined(ISRHEL8) || defined(ISCENTOS8))
 #define NLA_MIN_LEN NLA_UNSPEC
 #define COMPAT_CANNOT_INDIVIDUAL_NETLINK_OPS_POLICY
 #endif
@@ -854,7 +855,7 @@ static inline void skb_mark_not_on_list(struct sk_buff *skb)
 #endif
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 0) && !defined(ISOPENSUSE152)
 #define genl_dumpit_info(cb) ({ \
 	struct { struct nlattr **attrs; } *a = (void *)((u8 *)cb->args + offsetofend(struct dump_ctx, next_allowedip)); \
 	BUILD_BUG_ON(sizeof(cb->args) < offsetofend(struct dump_ctx, next_allowedip) + sizeof(*a)); \
@@ -863,10 +864,6 @@ static inline void skb_mark_not_on_list(struct sk_buff *skb)
 		memset(a->attrs, 0, (genl_family.maxattr + 1) * sizeof(struct nlattr *)); \
 	a; \
 })
-#endif
-
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 5) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)) || LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 18)
-#define ipv6_dst_lookup_flow(a, b, c, d) ipv6_dst_lookup(a, b, &dst, c) + (void *)0 ?: dst
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
@@ -927,9 +924,128 @@ static inline void skb_mark_not_on_list(struct sk_buff *skb)
 #define chacha20_neon zinc_chacha20_neon
 #endif
 
-#if defined(ISUBUNTU1604)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 19, 0) && !defined(ISRHEL7)
+#include <linux/skbuff.h>
+static inline int skb_ensure_writable(struct sk_buff *skb, int write_len)
+{
+	if (!pskb_may_pull(skb, write_len))
+		return -ENOMEM;
+
+	if (!skb_cloned(skb) || skb_clone_writable(skb, write_len))
+		return 0;
+
+	return pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
+}
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
+#if IS_ENABLED(CONFIG_NF_NAT)
+#include <linux/ip.h>
+#include <linux/icmpv6.h>
+#include <net/ipv6.h>
+#include <net/icmp.h>
+#include <net/netfilter/nf_conntrack.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
+#include <net/netfilter/nf_nat_core.h>
+#endif
+static inline void __compat_icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
+{
+	struct sk_buff *cloned_skb = NULL;
+	enum ip_conntrack_info ctinfo;
+	struct nf_conn *ct;
+	__be32 orig_ip;
+
+	ct = nf_ct_get(skb_in, &ctinfo);
+	if (!ct || !(ct->status & IPS_SRC_NAT)) {
+		icmp_send(skb_in, type, code, info);
+		return;
+	}
+
+	if (skb_shared(skb_in))
+		skb_in = cloned_skb = skb_clone(skb_in, GFP_ATOMIC);
+
+	if (unlikely(!skb_in || skb_network_header(skb_in) < skb_in->head ||
+	    (skb_network_header(skb_in) + sizeof(struct iphdr)) >
+	    skb_tail_pointer(skb_in) || skb_ensure_writable(skb_in,
+	    skb_network_offset(skb_in) + sizeof(struct iphdr))))
+		goto out;
+
+	orig_ip = ip_hdr(skb_in)->saddr;
+	ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
+	icmp_send(skb_in, type, code, info);
+	ip_hdr(skb_in)->saddr = orig_ip;
+out:
+	consume_skb(cloned_skb);
+}
+static inline void __compat_icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+{
+	struct sk_buff *cloned_skb = NULL;
+	enum ip_conntrack_info ctinfo;
+	struct in6_addr orig_ip;
+	struct nf_conn *ct;
+
+	ct = nf_ct_get(skb_in, &ctinfo);
+	if (!ct || !(ct->status & IPS_SRC_NAT)) {
+		icmpv6_send(skb_in, type, code, info);
+		return;
+	}
+
+	if (skb_shared(skb_in))
+		skb_in = cloned_skb = skb_clone(skb_in, GFP_ATOMIC);
+
+	if (unlikely(!skb_in || skb_network_header(skb_in) < skb_in->head ||
+	    (skb_network_header(skb_in) + sizeof(struct ipv6hdr)) >
+	    skb_tail_pointer(skb_in) || skb_ensure_writable(skb_in,
+	    skb_network_offset(skb_in) + sizeof(struct ipv6hdr))))
+		goto out;
+
+	orig_ip = ipv6_hdr(skb_in)->saddr;
+	ipv6_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
+	icmpv6_send(skb_in, type, code, info);
+	ipv6_hdr(skb_in)->saddr = orig_ip;
+out:
+	consume_skb(cloned_skb);
+}
+#else
+#define __compat_icmp_ndo_send icmp_send
+#define __compat_icmpv6_ndo_send icmpv6_send
+#endif
+#define icmp_ndo_send __compat_icmp_ndo_send
+#define icmpv6_ndo_send __compat_icmpv6_ndo_send
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
+#define COMPAT_CANNOT_USE_MAX_MTU
+#endif
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 5, 14) && LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)) || (LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 29) && !defined(ISUBUNTU1910))
+#include <linux/skbuff.h>
+#include <net/sch_generic.h>
+static inline void skb_reset_redirect(struct sk_buff *skb)
+{
+#ifdef CONFIG_NET_SCHED
+	skb_reset_tc(skb);
+#endif
+}
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0) && !defined(ISRHEL7)
+#define skb_get_hash skb_get_rxhash
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 15, 0) && !defined(ISRHEL7)
+#define hash rxhash
+#define l4_hash l4_rxhash
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) && !defined(ISRHEL7)
+#define sw_hash ignore_df = 0; skb->nf_trace = skb->ooo_okay
+#endif
+
+#if defined(ISUBUNTU1604) || defined(ISRHEL7)
 #include <linux/siphash.h>
 #ifndef _WG_LINUX_SIPHASH_H
+#define hsiphash_1u32 siphash_1u32
 #define hsiphash_2u32 siphash_2u32
 #define hsiphash_3u32 siphash_3u32
 #define hsiphash_key_t siphash_key_t
@@ -949,40 +1065,6 @@ static inline void skb_mark_not_on_list(struct sk_buff *skb)
 #include <linux/bug.h>
 #undef BUILD_BUG_ON
 #define BUILD_BUG_ON(x)
-#endif
-
-/* https://lkml.kernel.org/r/20170624021727.17835-1-Jason@zx2c4.com */
-#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-#include <linux/ip.h>
-#include <linux/icmpv6.h>
-#include <net/ipv6.h>
-#include <net/icmp.h>
-#include <net/netfilter/nf_conntrack.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 1, 0)
-#include <net/netfilter/nf_nat_core.h>
-#endif
-static inline void new_icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
-{
-	enum ip_conntrack_info ctinfo;
-	struct nf_conn *ct = nf_ct_get(skb_in, &ctinfo);
-	if (skb_network_header(skb_in) < skb_in->head || (skb_network_header(skb_in) + sizeof(struct iphdr)) > skb_tail_pointer(skb_in))
-		return;
-	if (ct)
-		ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
-	icmp_send(skb_in, type, code, info);
-}
-static inline void new_icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-{
-	enum ip_conntrack_info ctinfo;
-	struct nf_conn *ct = nf_ct_get(skb, &ctinfo);
-	if (skb_network_header(skb) < skb->head || (skb_network_header(skb) + sizeof(struct ipv6hdr)) > skb_tail_pointer(skb))
-		return;
-	if (ct)
-		ipv6_hdr(skb)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
-	icmpv6_send(skb, type, code, info);
-}
-#define icmp_send(a,b,c,d) new_icmp_send(a,b,c,d)
-#define icmpv6_send(a,b,c,d) new_icmpv6_send(a,b,c,d)
 #endif
 
 /* PaX compatibility */
