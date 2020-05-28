@@ -56,6 +56,10 @@
 #include "mdss_smmu.h"
 #include "mdss_mdp.h"
 
+#ifdef CONFIG_FLICKER_FREE
+#include "flicker_free.h"
+#endif
+
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MDSS_FB_NUM 3
 #else
@@ -2071,6 +2075,10 @@ void mdss_fb_set_backlight(struct msm_fb_data_type *mfd, u32 bkl_lvl)
 				bl_notify_needed = true;
 			pr_debug("backlight sent to panel :%d\n", temp);
 			pdata->set_backlight(pdata, temp);
+#ifdef CONFIG_FLICKER_FREE
+			ff_mfd_copy = mfd;
+			ff_bl_lvl_cpy = temp;
+#endif
 			mfd->bl_level = bkl_lvl;
 			mfd->bl_level_scaled = temp;
 		}
@@ -2104,6 +2112,10 @@ void mdss_fb_update_backlight(struct msm_fb_data_type *mfd)
 				mdss_fb_bl_update_notify(mfd,
 					NOTIFY_TYPE_BL_AD_ATTEN_UPDATE);
 			mdss_fb_bl_update_notify(mfd, NOTIFY_TYPE_BL_UPDATE);
+#ifdef CONFIG_FLICKER_FREE
+			ff_mfd_copy = mfd;
+			ff_bl_lvl_cpy = temp;
+#endif
 			pdata->set_backlight(pdata, temp);
 			mfd->bl_level_scaled = mfd->unset_bl_level;
 			mfd->allow_bl_update = true;
