@@ -27,6 +27,10 @@
 #include "mdss_dba_utils.h"
 #include "mdss_debug.h"
 
+#ifdef CONFIG_FLICKER_FREE
+#include "flicker_free.h"
+#endif
+
 #include <linux/clk.h>
 #include <linux/project_info.h>
 #if defined(CONFIG_IRIS2P_FULL_SUPPORT)
@@ -1075,6 +1079,12 @@ static void mdss_dsi_panel_bl_ctrl(struct mdss_panel_data *pdata,
 
 	if ((bl_level < pdata->panel_info.bl_min) && (bl_level != 0))
 		bl_level = pdata->panel_info.bl_min;
+
+#ifdef CONFIG_FLICKER_FREE
+	/* remap backlight value */
+	if (bl_level != 0)
+		bl_level = mdss_panel_calc_backlight(bl_level);
+#endif
 
 	/* enable the backlight gpio if present */
 	mdss_dsi_bl_gpio_ctrl(pdata, bl_level);
