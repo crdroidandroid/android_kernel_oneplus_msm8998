@@ -301,14 +301,6 @@ static void unmap_range(struct kvm *kvm, pgd_t *pgdp,
 		next = kvm_pgd_addr_end(addr, end);
 		if (!pgd_none(*pgd))
 			unmap_puds(kvm, pgd, addr, next);
-		/*
-		 * If we are dealing with a large range in
-		 * stage2 table, release the kvm->mmu_lock
-		 * to prevent starvation and lockup detector
-		 * warnings.
-		 */
-		if (kvm && (next != end))
-			cond_resched_lock(&kvm->mmu_lock);
 	} while (pgd++, addr = next, addr != end);
 }
 
@@ -1289,7 +1281,7 @@ static int user_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa,
 		return -EFAULT;
 	}
 
-	if (is_vm_hugetlb_page(vma) && !logging_active) {
+	if (vma_kernel_pagesize(vma) == PMD_SIZE && !logging_active) {
 		hugetlb = true;
 		gfn = (fault_ipa & PMD_MASK) >> PAGE_SHIFT;
 	} else {
