@@ -867,13 +867,14 @@
 		compatible = "android,firmware";
 		fstab {
 			compatible = "android,fstab";
+			boot_devices = "soc/1da4000.ufshc";
 			vendor {
 				compatible = "android,vendor";
 				dev = "/dev/block/platform/soc/1da4000.ufshc/by-name/vendor";
 				type = "ext4";
 				mnt_flags = "ro,barrier=1,discard";
 				fsmgr_flags = "wait,verify";
-				status = "ok";
+				status = "disabled";
 			};
 			system {
 				compatible = "android,system";
@@ -881,7 +882,7 @@
 				type = "ext4";
 				mnt_flags = "ro,barrier=1,discard";
 				fsmgr_flags = "wait,verify";
-				status = "ok";
+				status = "disabled";
 			};
 		};
 	};

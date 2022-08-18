@@ -429,6 +429,7 @@
 	firmware: firmware {
 		android {
 			compatible = "android,firmware";
+			boot_devices = "soc/1da4000.ufshc";
 			fstab {
 				compatible = "android,fstab";
 				vendor {
@@ -437,7 +438,7 @@
 					type = "ext4";
 					mnt_flags = "ro,barrier=1,discard";
 					fsmgr_flags = "wait,verify";
-					status = "ok";
+					status = "disabled";
 				};
 				system {
 					compatible = "android,system";
@@ -445,7 +446,7 @@
 					type = "ext4";
 					mnt_flags = "ro,barrier=1,discard";
 					fsmgr_flags = "wait,verify";
-					status = "ok";
+					status = "disabled";
 				};
 			};
 		};
