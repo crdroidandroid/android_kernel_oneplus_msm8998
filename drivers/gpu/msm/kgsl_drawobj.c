@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017,2019, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016-2017,2019,2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -621,7 +621,6 @@ static void add_profiling_buffer(struct kgsl_device *device,
 			drawobj->context->id, id, offset, gpuaddr, size);
 		return;
 	}
-
 
 	if (id) {
 		u64 off = offset + sizeof(struct kgsl_drawobj_profiling_buffer);
